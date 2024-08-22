@@ -1,4 +1,4 @@
-package br.com.quizcraft.quizcraft;
+package br.com.quizcraft;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

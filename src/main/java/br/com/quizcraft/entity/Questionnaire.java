@@ -1,4 +1,4 @@
-package br.com.quizcraft.quizcraft.user.entity;
+package br.com.quizcraft.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,26 +10,20 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tb_users")
+@Table(name = "tb_questionnaire")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class User {
+public class Questionnaire {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    @Column(name = "questionnaire_id", nullable = false)
+    private UUID questionnaireId;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
+    private String title;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

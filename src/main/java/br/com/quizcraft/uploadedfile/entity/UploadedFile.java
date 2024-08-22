@@ -1,4 +1,4 @@
-package br.com.quizcraft.quizcraft.uploadedfile.entity;
+package br.com.quizcraft.uploadedfile.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

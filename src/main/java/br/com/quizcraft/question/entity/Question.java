@@ -1,7 +1,7 @@
-package br.com.quizcraft.quizcraft.question.entity;
+package br.com.quizcraft.question.entity;
 
-import br.com.quizcraft.quizcraft.question.enums.AnswerEnum;
-import br.com.quizcraft.quizcraft.questionnaire.entity.Questionnaire;
+import br.com.quizcraft.question.enums.AnswerEnum;
+import br.com.quizcraft.entity.Questionnaire;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
