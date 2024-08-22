@@ -1,4 +1,4 @@
-package br.com.quizcraft.entity;
+package br.com.quizcraft.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
