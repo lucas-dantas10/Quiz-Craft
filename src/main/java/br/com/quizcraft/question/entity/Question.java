@@ -27,7 +27,7 @@ public class Question {
     @JoinColumn(name = "questionnaire_id", nullable = false)
     private Questionnaire questionnaireId;
 
-    @Column(name = "question_text", nullable = false)
+    @Column(name = "question_text", columnDefinition = "TEXT", nullable = false)
     private String questionText;
 
     @Column(columnDefinition = "jsonb", nullable = false)
