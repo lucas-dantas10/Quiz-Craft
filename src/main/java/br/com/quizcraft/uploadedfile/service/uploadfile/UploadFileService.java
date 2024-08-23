@@ -16,7 +16,8 @@ public class UploadFileService implements UploadFileServiceInterface {
     @Override
     public void uploadFile(MultipartFile exam, MultipartFile answers) throws IOException {
         // TODO: Process data of pdf
-         pdfService.extractTextFromPdf(exam);
+         pdfService.extractQuestionTextFromPdf(exam);
+         pdfService.extractAnswersTextFromPdf(answers);
 
         // TODO: add texts formatted in database
     }
