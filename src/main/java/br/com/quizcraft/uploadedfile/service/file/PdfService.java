@@ -22,14 +22,16 @@ public class PdfService {
         String questions = this.getTextFromPdf(exam);
 
         List<Map<String, Object>> questionsMap = new ArrayList<>();
-        String[] questionSplit = questions.split("QUESTÃO \\d+");
+        String[] questionSplit = questions.split("QUESTÃO \\d+"); // TODO: improve regex to get question without options
 
         for (String question : questionSplit) {
             if (question.isEmpty()) continue;
 
             Map<String, Object> questionMap = new HashMap<>();
-            Pattern patternOption = Pattern.compile("\"([A-E])\\\\s(.+?)(?=\\\\n[A-E]\\\\s|$)\"", Pattern.DOTALL);
+            // TODO: improve options to get ONLY option and not in text question
+            Pattern patternOption = Pattern.compile("([A-E])\\s(.+?)(?=(?:\\n[A-E]\\s)|$)", Pattern.DOTALL);
             Matcher matcherOption = patternOption.matcher(question);
+            log.info("Question: {}", question);
 
             List<String> options = new ArrayList<>();
             int startOptionsIndex = question.length();
@@ -38,6 +40,7 @@ public class PdfService {
                 options.add(matcherOption.group(1) + ": " + matcherOption.group(2).trim());
                 startOptionsIndex = Math.min(startOptionsIndex, matcherOption.start());
             }
+            log.info("Options: {}", options);
 
             String questionText = question.substring(0, startOptionsIndex).trim();
             questionMap.put("Enunciado", questionText);
@@ -45,17 +48,7 @@ public class PdfService {
 
             questionsMap.add(questionMap);
         }
-
-        // TODO: separate QUESTION and OPTIONS correctly
-
-        for (int i = 0; i < questionsMap.size(); i++) {
-            log.info("QUESTÃO: {}", (i + 1));
-            log.info("Enunciado: {}", questionsMap.get(i).get("Enunciado"));
-            List<String> opcoes = (List<String>) questionsMap.get(i).get("Opções");
-            for (String opcao : opcoes) {
-                log.info(opcao);
-            }
-        }
+        
         // TODO: save in DTO and return DTO
     }
 
@@ -76,7 +69,6 @@ public class PdfService {
             log.error("Error parsing PDF", e);
         }
 
-        log.info("Extracted text from PDF: {}", text);
         return text;
     }
 }
