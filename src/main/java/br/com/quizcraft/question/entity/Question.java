@@ -23,14 +23,14 @@ public class Question {
     @Column(name = "question_id", nullable = false)
     private UUID questionId;
 
-    @ManyToOne
-    @JoinColumn(name = "questionnaire_id", nullable = false)
-    private Questionnaire questionnaireId;
+//    @ManyToOne
+//    @JoinColumn(name = "questionnaire_id", nullable = false)
+//    private Questionnaire questionnaireId;
 
     @Column(name = "question_text", columnDefinition = "TEXT", nullable = false)
     private String questionText;
 
-    @Column(columnDefinition = "jsonb", nullable = false)
+    @Column(columnDefinition = "json", nullable = false)
     private String options;
 
     @Column(name = "correct_answer", nullable = false)
