@@ -1,17 +1,19 @@
 package br.com.quizcraft.question.entity;
 
 import br.com.quizcraft.question.enums.AnswerEnum;
+import br.com.quizcraft.question.model.Option;
 import br.com.quizcraft.questionnaire.entity.Questionnaire;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tb_questions")
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -30,8 +32,9 @@ public class Question {
     @Column(name = "question_text", columnDefinition = "TEXT", nullable = false)
     private String questionText;
 
-    @Column(columnDefinition = "json", nullable = false)
-    private String options;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private List<Option> options;
 
     @Column(name = "correct_answer", nullable = false)
     @Enumerated(EnumType.STRING)
