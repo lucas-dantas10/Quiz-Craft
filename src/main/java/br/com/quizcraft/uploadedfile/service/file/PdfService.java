@@ -1,15 +1,8 @@
 package br.com.quizcraft.uploadedfile.service.file;
 
-import br.com.quizcraft.question.dto.QuestionDto;
-import br.com.quizcraft.question.entity.Question;
-import br.com.quizcraft.question.enums.AnswerEnum;
-import br.com.quizcraft.question.repository.QuestionRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,13 +15,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class PdfService {
 
-    @Autowired
-    private QuestionRepository questionRepository;
-
-    public void extractQuestionTextFromPdf(MultipartFile exam) throws IOException {
+    public List<Map<String, Object>> extractQuestionTextFromPdf(MultipartFile exam) throws IOException {
         String questions = this.getTextFromPdf(exam);
-
-        // TODO: Refator code
 
         List<Map<String, Object>> questionsMap = new ArrayList<>();
         questions = questions.replaceAll("(?i)\\b(caderno\\s*\\w+|1º DIA|.*fragmento).*\\R?", "");
@@ -41,11 +29,12 @@ public class PdfService {
             Pattern patternOption = Pattern.compile("([A-E])\\s(.+?)(?=(?:\\n[A-E]\\s)|$)", Pattern.DOTALL);
             Matcher matcherOption = patternOption.matcher(question);
 
-            List<String> options = new ArrayList<>();
+            Map<String, String> options = new HashMap<>();
             int startOptionsIndex = question.length();
 
             while (matcherOption.find()) {
-                options.add(matcherOption.group(1) + ": " + matcherOption.group(2).trim());
+                options.put("option", matcherOption.group(1));
+                options.put("text", matcherOption.group(2).trim());
                 startOptionsIndex = Math.min(startOptionsIndex, matcherOption.start());
             }
 
@@ -56,26 +45,7 @@ public class PdfService {
             questionsMap.add(questionMap);
         }
 
-        // TODO: Refator code
-        questionsMap.forEach(item -> {
-            ObjectMapper mapper = new ObjectMapper();
-            String options = "";
-            try {
-                options = mapper.writeValueAsString(item.get("options"));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-
-            Question question = new Question();
-            question.setQuestionText((String) item.get("question_text"));
-            question.setOptions(options);
-            question.setCorrectAnswer(AnswerEnum.A);
-            questionRepository.insertQuestion(
-                question.getCorrectAnswer().toString(),
-                question.getOptions(),
-                question.getQuestionText()
-            );
-        });
+        return questionsMap;
     }
 
     public void extractAnswersTextFromPdf(MultipartFile answers) throws IOException {
