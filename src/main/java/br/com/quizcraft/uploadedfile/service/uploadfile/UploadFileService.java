@@ -31,7 +31,7 @@ public class UploadFileService implements UploadFileServiceInterface {
 
         questionsMap.forEach(item -> {
             List<Option> options = OptionBuilder.buildOption(
-                (Map<String, String>) item.get("options")
+                (List<Map<String, String>>) item.get("options")
             );
             Question question = Question.builder()
                 .questionText((String) item.get("question_text"))

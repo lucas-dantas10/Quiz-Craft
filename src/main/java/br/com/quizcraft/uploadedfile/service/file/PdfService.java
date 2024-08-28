@@ -29,12 +29,14 @@ public class PdfService {
             Pattern patternOption = Pattern.compile("([A-E])\\s(.+?)(?=(?:\\n[A-E]\\s)|$)", Pattern.DOTALL);
             Matcher matcherOption = patternOption.matcher(question);
 
-            Map<String, String> options = new HashMap<>();
+            List<Map<String, String>> options = new ArrayList<>();
             int startOptionsIndex = question.length();
 
             while (matcherOption.find()) {
-                options.put("option", matcherOption.group(1));
-                options.put("text", matcherOption.group(2).trim());
+                Map<String, String> option = new HashMap<>();
+                option.put("option", matcherOption.group(1));
+                option.put("text", matcherOption.group(2).trim());
+                options.add(option);
                 startOptionsIndex = Math.min(startOptionsIndex, matcherOption.start());
             }
 
