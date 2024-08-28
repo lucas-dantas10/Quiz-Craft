@@ -26,7 +26,7 @@ public class PdfService {
             if (question.isEmpty()) continue;
 
             Map<String, Object> questionMap = new HashMap<>();
-            Pattern patternOption = Pattern.compile("([A-E])\\s(.+?)(?=(?:\\n[A-E]\\s)|$)", Pattern.DOTALL);
+            Pattern patternOption = Pattern.compile("(?m)^(A|B|C|D|E)\\s+(.+?)(?=^\\s*[A-E]\\s|\\Z)", Pattern.DOTALL);
             Matcher matcherOption = patternOption.matcher(question);
 
             List<Map<String, String>> options = new ArrayList<>();
@@ -59,13 +59,22 @@ public class PdfService {
     private String getTextFromPdf(MultipartFile file) {
         String text = "";
 
+        log.info("Extracting text from: {}", file.getOriginalFilename());
+
         try (PDDocument document = PDDocument.load(file.getInputStream())) {
+            if (document.getNumberOfPages() > 1) {
+                document.removePage(0);
+            }
+
             PDFTextStripper pdfTextStripper = new PDFTextStripper();
 
             text = pdfTextStripper.getText(document);
+            text = text.replaceAll("(?m)^(LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS|CIÊNCIAS HUMANAS E SUAS TECNOLOGIAS|Questões de \\d+ a \\d+|Questões de \\d+ a \\d+ \\(opção [a-zA-Z]+\\)|\\d+\\s*–LC\\s*•).*\\R?", "");
         } catch (final Exception e) {
             log.error("Error parsing PDF", e);
         }
+
+        log.info("Extracted text");
 
         return text;
     }
