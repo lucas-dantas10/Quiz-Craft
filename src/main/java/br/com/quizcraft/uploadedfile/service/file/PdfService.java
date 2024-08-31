@@ -8,8 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 @Slf4j
@@ -26,21 +24,29 @@ public class PdfService {
             if (question.isEmpty()) continue;
 
             Map<String, Object> questionMap = new HashMap<>();
-            Pattern patternOption = Pattern.compile("(?m)^(A|B|C|D|E)\\s+(.+?)(?=^\\s*[A-E]\\s|\\Z)", Pattern.DOTALL);
-            Matcher matcherOption = patternOption.matcher(question);
-
+            String[] lines = question.split("\\R");
+            StringBuilder questionTextBuilder = new StringBuilder();
             List<Map<String, String>> options = new ArrayList<>();
-            int startOptionsIndex = question.length();
+            boolean isFirstLine = true;
 
-            while (matcherOption.find()) {
-                Map<String, String> option = new HashMap<>();
-                option.put("option", matcherOption.group(1));
-                option.put("text", matcherOption.group(2).trim());
-                options.add(option);
-                startOptionsIndex = Math.min(startOptionsIndex, matcherOption.start());
+            for (String line : lines) {
+                if (isFirstLine) {
+                    questionTextBuilder.append(line.trim()).append(" ");
+                    isFirstLine = false;
+                    continue;
+                }
+
+                if (line.matches("^[A-E]\\s+.*")) {
+                    Map<String, String> option = new HashMap<>();
+                    option.put("option", line.substring(0, 1));
+                    option.put("text", line.substring(2).trim());
+                    options.add(option);
+                } else {
+                    questionTextBuilder.append(line.trim()).append(" ");
+                }
             }
 
-            String questionText = question.substring(0, startOptionsIndex).trim();
+            String questionText = questionTextBuilder.toString().trim();
             questionMap.put("question_text", questionText);
             questionMap.put("options", options);
 
@@ -69,7 +75,9 @@ public class PdfService {
             PDFTextStripper pdfTextStripper = new PDFTextStripper();
 
             text = pdfTextStripper.getText(document);
-            text = text.replaceAll("(?m)^(LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS|CIÊNCIAS HUMANAS E SUAS TECNOLOGIAS|Questões de \\d+ a \\d+|Questões de \\d+ a \\d+ \\(opção [a-zA-Z]+\\)|\\d+\\s*–LC\\s*•).*\\R?", "");
+            text = text.replaceAll("(?m)^(LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS|CIÊNCIAS HUMANAS " +
+                "E SUAS TECNOLOGIAS|Questões de \\d+ a \\d+|Questões de \\d+ a \\d+ \\(opção [a-zA-Z]+\\)" +
+                "|\\d+\\s*–LC\\s*•).*\\R?", "");
         } catch (final Exception e) {
             log.error("Error parsing PDF", e);
         }
